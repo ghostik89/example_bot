@@ -36,17 +36,27 @@ def handle_first_message(message):
     open_main_menu(message)
     return
 
+
 def tell_story(message):
      user_id = message.from_id
      vk.messages.send(peer_id=user_id, random_id=get_random_id(), message="some story")
      open_main_menu(message)
      return
 
+
 def say_hi(message):
+    user_id = message.from_id
+    vk.messages.send(peer_id=user_id, random_id=get_random_id(), message="Введите свое имя")
+    local_db.change_user_state(user_id, config.UserState.SAY_HELLO.value);
     return
 
 
 def handle_say_hay(message):
+    user_id = message.from_id
+    text = "Здравствуйте, " + message.text
+    vk.messages.send(peer_id=user_id, random_id=get_random_id(), message=text)
+    local_db.change_user_state(user_id, config.UserState.MAIN.value);
+    open_main_menu
     return
 
 
@@ -145,7 +155,7 @@ def create_keyboard(*buttons_text):
 def find_state(state):
     all_states = {
         config.UserState.MAIN.value: open_main_menu,
-        config.UserState.SAY_HELLO.value: say_hi    
+        config.UserState.SAY_HELLO.value: handle_say_hay    
     }
     if state in all_states:
         return all_states[state]
